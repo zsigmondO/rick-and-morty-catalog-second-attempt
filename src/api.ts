@@ -33,7 +33,9 @@ export function getCharacters(
   request: CharactersListApiRequest
 ): Promise<CharactersListPage> {
   return fetch(
-    `https://rickandmortyapi.com/api/character?page=${request.pagination.page}&name=${request.filters.name}`
+    `https://rickandmortyapi.com/api/character?page=${
+      request.pagination.page + 1
+    }&name=${request.filters.name}`
   )
     .then((result) => result.json() as Promise<CharactersApiResponse>)
     .then((response) => {
@@ -83,11 +85,17 @@ interface CharacterApiResponse {
   created: string;
 }
 
-export function getCharacter(id: number): Promise<CharacterDetailPage> {
+export function getCharacter(id: number): Promise<CharacterDetailPage | null> {
   return fetch(`https://rickandmortyapi.com/api/character/${id}`)
-    .then(async (result) => {
-      return (result.json() as Promise<CharacterApiResponse>).then(
-        (response) => ({
+    .then((result) => {
+      if(result.ok) {
+        return result.json() as Promise<CharacterApiResponse>
+      }
+      return null;
+    })
+    .then((response) => {
+      if(response) {
+        return {
           id: response.id,
           name: response.name,
           status: response.status,
@@ -96,17 +104,8 @@ export function getCharacter(id: number): Promise<CharacterDetailPage> {
           gender: response.gender,
           image: response.image,
           created: response.created,
-        })
-      );
-    })
-    .catch(() => ({
-      id: 577,
-      name: "Your ID is invalid",
-      status: "It's either too large",
-      species: "Or not a valid natural number",
-      type: "This is a fallback",
-      gender: "You can ignore",
-      image: "This message",
-      created: "(type a number after /profile/ e.g. /profile/577)",
-    }));
+        }
+      }
+      return null;
+    });
 }
