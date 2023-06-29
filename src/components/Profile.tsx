@@ -10,69 +10,57 @@ import { getCharacter } from "../api";
 import { useNavigate, useParams } from "react-router-dom";
 
 function Profile() {
-  const [cardID, setCardID] = useState<number>(577);
-  const [cardDetails, setCardDetails] = useState<CharacterDetailPage>({
-    id: 6,
-    name: "",
-    status: "",
-    species: "",
-    type: "",
-    gender: "",
-    image: "",
-    created: "",
-  });
+  const [cardDetails, setCardDetails] = useState<CharacterDetailPage | null>(
+    null
+  );
 
-  let navigate = useNavigate();
-  const handleButtonClick = () => {
-    let path: string = `/`;
-    navigate(path);
-  };
+  const navigate = useNavigate();
 
-  const { id } = useParams() as {id: string};
-  useEffect(() => {    
-    setCardID(parseInt(id, 10));
-  }, [id]);
+  const handleButtonClick = () => navigate("/");
+  const { id } = useParams() as { id: string };
 
   useEffect(() => {
-    getCharacter(cardID).then((item) => {
-      setCardDetails(item);
-      console.log(item);
+    getCharacter(parseInt(id)).then((item) => {
+      if (item) {
+        setCardDetails(item);
+      } else {
+        navigate("/");
+      }
     });
-  }, [cardID]);
+  });
 
   return (
     <div>
-      <Card raised sx={{ width: 300, margin: "auto", padding: "0.1em" }}>
-        <CardMedia
-          component="img"
-          height="100%"
-          width="100%"
-          image={cardDetails.image}
-          title={cardDetails.name}
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {cardDetails.name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Status: {cardDetails.status}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Species: {cardDetails.species}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Gender: {cardDetails.gender}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Created: {cardDetails.created}
-          </Typography>
-        </CardContent>
-        <CardActions>
-          <Button size="small" onClick={handleButtonClick}>
-            Back to Home
-          </Button>
-        </CardActions>
-      </Card>
+      {cardDetails && (
+        <Card raised sx={{ width: 300, margin: "auto", padding: "0.1em" }}>
+          <CardMedia
+            component="img"
+            height="100%"
+            width="100%"
+            image={cardDetails.image}
+            title={cardDetails.name}
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {cardDetails.name}
+            </Typography>
+            <Typography variant="body2" color="text.primary">
+              Status: {cardDetails.status}
+            </Typography>
+            <Typography variant="body2" color="text.primary">
+              Species: {cardDetails.species}
+            </Typography>
+            <Typography variant="body2" color="text.primary">
+              Gender: {cardDetails.gender}
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button size="small" onClick={handleButtonClick}>
+              Back to Home
+            </Button>
+          </CardActions>
+        </Card>
+      )}
     </div>
   );
 }
