@@ -83,9 +83,9 @@ interface CharacterApiResponse {
   created: string;
 }
 
-export function getCharacter(id: string): Promise<CharacterDetailPage> {
-  return fetch(`https://rickandmortyapi.com/api/character/${id}`).then(
-    async (result) => {
+export function getCharacter(id: number): Promise<CharacterDetailPage> {
+  return fetch(`https://rickandmortyapi.com/api/character/${id}`)
+    .then(async (result) => {
       return (result.json() as Promise<CharacterApiResponse>).then(
         (response) => ({
           id: response.id,
@@ -98,6 +98,15 @@ export function getCharacter(id: string): Promise<CharacterDetailPage> {
           created: response.created,
         })
       );
-    }
-  );
+    })
+    .catch(() => ({
+      id: 577,
+      name: "Your ID is invalid",
+      status: "It's either too large",
+      species: "Or not a valid natural number",
+      type: "This is a fallback",
+      gender: "You can ignore",
+      image: "This message",
+      created: "(type a number after /profile/ e.g. /profile/577)",
+    }));
 }

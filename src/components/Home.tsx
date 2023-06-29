@@ -1,12 +1,9 @@
-import {
-  DataGrid,
-  GridColDef,
-  GridPaginationModel,
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { TextField } from "@mui/material";
 import { CharactersListApiRequest, CharactersListPage } from "../characters";
 import { getCharacters } from "../api";
 import { ChangeEvent, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function Home() {
   const columns: GridColDef[] = [
@@ -26,7 +23,15 @@ function Home() {
         );
       },
     },
-    { field: "name", headerName: "Name", width: 250, sortable: false },
+    {
+      field: "name",
+      headerName: "Name",
+      width: 250,
+      sortable: false,
+      renderCell: (params) => (
+        <Link to={`profile/${params.id}`}>{params.value}</Link>
+      ),
+    },
     { field: "species", headerName: "Species", width: 150, sortable: false },
     { field: "status", headerName: "Status", width: 150, sortable: false },
   ];
@@ -62,7 +67,7 @@ function Home() {
   const onTextChange = (event: ChangeEvent<HTMLInputElement>) =>
     setInputValue(event.target.value);
 
-    return (
+  return (
     <div style={{ height: 650, width: "100%" }}>
       <TextField
         id="standard-basic"
